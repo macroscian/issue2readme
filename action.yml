@@ -1,0 +1,14 @@
+name: "Issues to Readme"
+description: "Transfer issue posts to a section of the front-page
+README file"
+inputs: 
+  token: 
+    description: "The GitHub token to use. Make sure to use a Personal Access Token, so PRs can be updated." 
+    required: false
+    default: ${{ github.token }}
+branding: 
+  icon: "map"
+  color: "green"
+runs:
+  using: 'node12'
+  main: 'src/index.js'

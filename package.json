@@ -1,0 +1,24 @@
+{
+  "name": "blocking-issues",
+  "version": "1.3.0",
+  "description": "A GitHub action to label issues  when they're blocked by another issue.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/macroscian/blocking-issues.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/macroscian/blocking-issues/issues"
+  },
+  "homepage": "https://github.com/macroscian/blocking-issues#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.7",
+    "@actions/github": "^4.0.0"
+  }
+}
