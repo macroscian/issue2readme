@@ -14,6 +14,7 @@ async function build_issue_section() {
 	    repo: github.context.repo.repo
 	}
     )) {
+	console.log("Adding title");
 	issue_log += "## " + response.data.title + "\n\n";
 	console.log(response.data.tile);
 	for await (const comment of octokit.paginate.iterator(
@@ -22,7 +23,8 @@ async function build_issue_section() {
 		owner: github.context.repo.owner,
 		repo: github.context.repo.repo,
 		issue_number: response.data.id
-	    })) {
+	    }
+	)) {
 	    let body = comment.data.body;
 	    console.log(comment.data.tile);
 	    if (body.length < 200) {
