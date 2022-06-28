@@ -17,16 +17,12 @@ async function build_issue_section() {
 	for (const issue of issue_pages.data) {
 	    issue_log += "## " + issue.title + "\n\n";
 	    console.log("Adding title");
-	    console.log(github.context.repo.owner);
-	    console.log(github.context.repo.repo);
-	    console.log(issue.id);
-	    console.log(octokit.rest.issues.listComments);
 	    for await (const comment_pages of octokit.paginate.iterator(
 		octokit.rest.issues.listComments,
 		{
 		    owner: github.context.repo.owner,
 		    repo: github.context.repo.repo,
-		    issue_number: issue.id
+		    issue_number: issue.number
 		}
 	    )) {
 		console.log(comment_pages);
@@ -42,6 +38,7 @@ async function build_issue_section() {
 	    }
 	}
     }
+    console.log(issue_log);
 }
 
 module.exports = {
