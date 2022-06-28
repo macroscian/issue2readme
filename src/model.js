@@ -7,7 +7,7 @@ const octokit = github.getOctokit(token);
 async function build_issue_section() {
     console.log("Getting issues");
     var issue_log = "";
-    const readme = octokit.rest.repos.getContent({
+    const readme = await octokit.rest.repos.getContent({
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
 	path: "readme.md"
