@@ -7,31 +7,33 @@ const octokit = github.getOctokit(token);
 async function build_issue_section() {
     console.log("Getting issues");
     var issue_log = "";
-    for await (const response of octokit.paginate.iterator(
+    for await (const issue_pages of octokit.paginate.iterator(
 	octokit.rest.issues.listForRepo,
 	{
 	    owner: github.context.repo.owner,
 	    repo: github.context.repo.repo
 	}
     )) {
-	console.log("Adding title");
-	console.log(response);
-	issue_log += "## " + response.data.title + "\n\n";
-	console.log(response.data.tile);
-	for await (const comment of octokit.paginate.iterator(
-	    octokit.rest.issues.listComments,
-	    {
-		owner: github.context.repo.owner,
-		repo: github.context.repo.repo,
-		issue_number: response.data.id
-	    }
-	)) {
-	    let body = comment.data.body;
-	    console.log(comment.data.tile);
-	    if (body.length < 200) {
-		issue_log += comment.data.body;
-	    } else {
-		issue_log += body.substring(0,199) + " [..more..](" + comment.data.html_url + ")";
+	for (const issue of issue_pages.data) {
+	    console.log("Adding title");
+	    issue_log += "## " + issue.title + "\n\n";
+	    for await (const comment_pages of octokit.paginate.iterator(
+		octokit.rest.issues.listComments,
+		{
+		    owner: github.context.repo.owner,
+		    repo: github.context.repo.repo,
+		    issue_number: issue.id
+		}
+	    )) {
+		for (const comment of comment_pages.data) {
+		    let body = comment.data.body;
+		    console.log(comment.data.tile);
+		    if (body.length < 200) {
+			issue_log += comment.body;
+		    } else {
+			issue_log += body.substring(0,199) + " [..more..](" + comment.html_url + ")";
+		    }
+		}
 	    }
 	}
     }
