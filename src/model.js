@@ -26,6 +26,7 @@ async function build_issue_section() {
 		    issue_number: issue.id
 		}
 	    )) {
+		console.log(comment_pages);
 		for (const comment of comment_pages.data) {
 		    let body = comment.data.body;
 		    console.log(comment.data.tile);
