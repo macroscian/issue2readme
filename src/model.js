@@ -11,7 +11,8 @@ async function build_issue_section() {
 	octokit.rest.issues.listForRepo,
 	{
 	    owner: github.context.repo.owner,
-	    repo: github.context.repo.repo
+	    repo: github.context.repo.repo,
+	    state: "all"
 	}
     )) {
 	for (const issue of issue_pages.data) {
@@ -26,6 +27,7 @@ async function build_issue_section() {
 		}
 	    )) {
 		for (const comment of comment_pages.data) {
+		    console.log(comment);
 		    let body = comment.body;
 		    if (body.length < 200) {
 			issue_log += comment.body;
@@ -45,13 +47,21 @@ async function set_readme() {
 	repo: github.context.repo.repo,
 	path: "readme.md"
     });
+    const issue_start="<!--ISSUE_START-->";
+    const issue_end="<!--ISSUE_START-->";
     const place_holder="<!--BABSEND-->";
-    console.log(old_readme);
     const { path, sha, content, encoding } = old_readme.data;
     const rawContent = Buffer.from(content, encoding).toString();
-    const startIndex = rawContent.indexOf(place_holder);
+    var startIndex = rawContent.indexOf(issue_start);
     const issue_section = await build_issue_section();
-    const updatedContent = `${startIndex === -1 ? rawContent : rawContent.slice(0, startIndex)}\n${issue_section}`;
+    var updatedContent=rawContent;
+    if (startIndex === -1) {
+	start_index = rawContent.indexOf(place_holder);
+	var updatedContent = updatedContent.replace(place_holder, `${place_holder}\n${issue_start}\n${issue_section}\n${issue_end}`);
+    } else {
+	var end_index=rawContent.indexOf(issue_end);
+	updatedContent = rawContent.slice(0, rawContent.indexOf(issue_start)) + issue_start + '\n' + issue_section + '\n'  + rawContent.slice(rawContent.indexOf(issue_end));
+    }
     await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
