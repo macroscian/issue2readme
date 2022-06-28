@@ -6,7 +6,7 @@ const octokit = github.getOctokit(token);
 
 async function build_issue_section() {
     console.log("Getting issues");
-    var issue_log = "# Issues";
+    var issue_log = '# Issues\n\n';
     var issue_heading = false;
     for await (const issue_pages of octokit.paginate.iterator(
 	octokit.rest.issues.listForRepo,
@@ -18,7 +18,6 @@ async function build_issue_section() {
     )) {
 	for (const issue of issue_pages.data) {
 	    issue_heading = false;
-	    console.log("Adding title");
 	    for await (const comment_pages of octokit.paginate.iterator(
 		octokit.rest.issues.listComments,
 		{
@@ -35,10 +34,11 @@ async function build_issue_section() {
 			    issue_heading=true;
 			}
 			let body = comment.body;
-			if (body.length < 200) {
+			let detail_ind = body.indexOf('\n\n');
+			if (detail_ind == -1) {
 			    issue_log += comment.body + '\n';
 			} else {
-			    issue_log += "<details><summary>"+ body.substring(0,199) + "</summary>" + body + "</details>" + '\n';
+			    issue_log += "<details><summary>"+ body.substring(0,detail_ind) + "</summary>" + body.substrin(detail_ind)  + "</details>" + '\n';
 			}
 		    }
 		}
