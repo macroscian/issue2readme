@@ -16,6 +16,7 @@ async function build_issue_section() {
     )) {
 	for (const issue of issue_pages.data) {
 	    console.log("Adding title");
+	    console.log(issue);
 	    issue_log += "## " + issue.title + "\n\n";
 	    for await (const comment_pages of octokit.paginate.iterator(
 		octokit.rest.issues.listComments,
