@@ -40,7 +40,7 @@ async function build_issue_section() {
 }
 
 async function set_readme() {
-    const await old_readme = octokit.rest.repos.getContent({
+    const old_readme = await octokit.rest.repos.getContent({
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
 	path: "readme.md"
