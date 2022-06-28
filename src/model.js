@@ -27,8 +27,7 @@ async function build_issue_section() {
 	    )) {
 		console.log(comment_pages);
 		for (const comment of comment_pages.data) {
-		    let body = comment.data.body;
-		    console.log(comment.data.tile);
+		    let body = comment.body;
 		    if (body.length < 200) {
 			issue_log += comment.body;
 		    } else {
