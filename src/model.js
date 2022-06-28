@@ -7,12 +7,6 @@ const octokit = github.getOctokit(token);
 async function build_issue_section() {
     console.log("Getting issues");
     var issue_log = "";
-    const readme = await octokit.rest.repos.getContent({
-	owner: github.context.repo.owner,
-	repo: github.context.repo.repo,
-	path: "readme.md"
-    });
-    console.log(readme);
     for await (const issue_pages of octokit.paginate.iterator(
 	octokit.rest.issues.listForRepo,
 	{
@@ -45,14 +39,27 @@ async function build_issue_section() {
     return issue_log;
 }
 
-async function get_readme() {
-    const res = octokit.rest.repos.getContent({
+async function set_readme() {
+    const old_readme = octokit.rest.repos.getContent({
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
 	path: "readme.md"
     });
+    const place_holder="<!--BABSEND-->";
+    const { path, sha, content, encoding } = get_readme.data;
+    const rawContent = Buffer.from(content, encoding).toString();
+    const startIndex = rawContent.indexOf(place_holder);
+    const issue_section = build_issue_section();
+    const updatedContent = `${startIndex === -1 ? rawContent : rawContent.slice(0, startIndex)}\n${issue_section}`;
+    await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+	owner: github.context.repo.owner,
+	repo: github.context.repo.repo,
+	path: "readme.md",
+	message: 'BABS-bot transferred issues to readme',
+	content: updatedContent
+    });
 }
 
 module.exports = {
-    build_issue_section
+    set_readme
 }
