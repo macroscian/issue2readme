@@ -56,6 +56,7 @@ async function set_readme() {
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
 	path: "readme.md",
+	sha: sha,
 	message: 'BABS-bot transferred issues to readme',
 	content: updatedContent
     });
