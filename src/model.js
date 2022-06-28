@@ -46,6 +46,7 @@ async function set_readme() {
 	path: "readme.md"
     });
     const place_holder="<!--BABSEND-->";
+    console.log(old_readme);
     const { path, sha, content, encoding } = old_readme.data;
     const rawContent = Buffer.from(content, encoding).toString();
     const startIndex = rawContent.indexOf(place_holder);
