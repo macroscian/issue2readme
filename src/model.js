@@ -28,11 +28,13 @@ async function build_issue_section() {
 	    )) {
 		for (const comment of comment_pages.data) {
 		    console.log(comment);
-		    let body = comment.body;
-		    if (body.length < 200) {
-			issue_log += comment.body;
-		    } else {
-			issue_log += body.substring(0,199) + " [..more..](" + comment.html_url + ")";
+		    if (comment.user.login !=='github-actions[bot]')  {
+			let body = comment.body;
+			if (body.length < 200) {
+			    issue_log += comment.body + '\n';
+			} else {
+			    issue_log += body.substring(0,199) + " [..more..](" + comment.html_url + ")" + '\n';
+			}
 		    }
 		}
 	    }
@@ -48,7 +50,7 @@ async function set_readme() {
 	path: "readme.md"
     });
     const issue_start="<!--ISSUE_START-->";
-    const issue_end="<!--ISSUE_START-->";
+    const issue_end="<!--ISSUE_END-->";
     const place_holder="<!--BABSEND-->";
     const { path, sha, content, encoding } = old_readme.data;
     const rawContent = Buffer.from(content, encoding).toString();
