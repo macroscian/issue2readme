@@ -50,7 +50,7 @@ async function set_readme() {
     const { path, sha, content, encoding } = old_readme.data;
     const rawContent = Buffer.from(content, encoding).toString();
     const startIndex = rawContent.indexOf(place_holder);
-    const issue_section = build_issue_section();
+    const issue_section = await build_issue_section();
     const updatedContent = `${startIndex === -1 ? rawContent : rawContent.slice(0, startIndex)}\n${issue_section}`;
     await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
 	owner: github.context.repo.owner,
