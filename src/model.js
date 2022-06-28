@@ -58,7 +58,7 @@ async function set_readme() {
 	path: "readme.md",
 	sha: sha,
 	message: 'BABS-bot transferred issues to readme',
-	content: updatedContent
+	content: Buffer.from(updatedContent, "utf-8").toString(encoding)
     });
 }
 
