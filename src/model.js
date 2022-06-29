@@ -40,7 +40,7 @@ async function build_issue_section() {
 			if (detail_ind === undefined) {
 			    issue_log += comment.body + '\n';
 			} else {
-			    issue_log += "<details><summary>"+ body.substring(0,detail_ind) + "</summary>" + body.substrin(detail_ind)  + "</details>" + '\n';
+			    issue_log += "<details><summary>"+ body.substring(0,detail_ind) + "</summary>" + body.substring(detail_ind)  + "</details>" + '\n';
 			}
 		    }
 		}
