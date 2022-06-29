@@ -30,12 +30,14 @@ async function build_issue_section() {
 		    console.log(comment);
 		    if (comment.user.login !=='github-actions[bot]')  {
 			if (issue_heading==false) {
-			    issue_log += "## " + issue.title + "\n\n";
+			    issue_log += "## " + issue.title + '\n\n';
 			    issue_heading=true;
 			}
 			let body = comment.body;
-			let detail_ind = body.indexOf('\n\n');
-			if (detail_ind == -1) {
+			// Find end of the first sentence after 200 chars
+			let detail_ind = [...body.matchAll(new RegExp('[.!?] ', 'g'))].map(a => a.index).find(pos => pos > 200);
+			issue_log += '\n\n- [' + comment.updated_at + '](' + comment.html_url + ')\n\n'
+			if (detail_ind === undefined) {
 			    issue_log += comment.body + '\n';
 			} else {
 			    issue_log += "<details><summary>"+ body.substring(0,detail_ind) + "</summary>" + body.substrin(detail_ind)  + "</details>" + '\n';
