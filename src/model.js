@@ -18,7 +18,7 @@ async function build_issue_section() {
     )) {
 	for (const issue of issue_pages.data) {
 	    issue_heading = false;
-	    [out, issue_heading] = log_text(issue, issue_heading);
+	    [out, issue_heading] = log_text(issue, issue, issue_heading);
 	    issue_log += out;
 	    for await (const comment_pages of octokit.paginate.iterator(
 		octokit.rest.issues.listComments,
@@ -30,7 +30,7 @@ async function build_issue_section() {
 	    )) {
 		for (const comment of comment_pages.data) {
 		    console.log(comment);
-		    [out, issue_heading] = log_text(comment, issue_heading);
+		    [out, issue_heading] = log_text(comment, issue, issue_heading);
 		    issue_log += out;
 		}
 	    }
@@ -39,7 +39,7 @@ async function build_issue_section() {
     return issue_log;
 }
 
-function log_text(gh, issue_heading) {
+function log_text(gh, issue, issue_heading) {
     var out="";
     if (gh.user.login !=='github-actions[bot]')  {
 	if (issue_heading==false) {
