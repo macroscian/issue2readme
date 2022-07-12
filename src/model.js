@@ -18,6 +18,8 @@ async function build_issue_section() {
     )) {
 	for (const issue of issue_pages.data) {
 	    issue_heading = false;
+	    [out, issue_heading] = log_text(issue, issue_heading);
+	    issue_log += out;
 	    for await (const comment_pages of octokit.paginate.iterator(
 		octokit.rest.issues.listComments,
 		{
@@ -28,26 +30,33 @@ async function build_issue_section() {
 	    )) {
 		for (const comment of comment_pages.data) {
 		    console.log(comment);
-		    if (comment.user.login !=='github-actions[bot]')  {
-			if (issue_heading==false) {
-			    issue_log += "## " + issue.title + '\n\n';
-			    issue_heading=true;
-			}
-			let body = comment.body;
-			// Find end of the first sentence after 200 chars
-			let detail_ind = [...body.matchAll(new RegExp('[.!?] ', 'g'))].map(a => a.index).find(pos => pos > 200);
-			issue_log += '\n\n- [' + comment.updated_at + '](' + comment.html_url + ')\n\n'
-			if (detail_ind === undefined) {
-			    issue_log += comment.body + '\n';
-			} else {
-			    issue_log += "<details><summary>"+ body.substring(0,detail_ind) + "</summary>" + body.substring(detail_ind)  + "</details>" + '\n';
-			}
-		    }
+		    [out, issue_heading] = log_text(comment, issue_heading);
+		    issue_log += out;
 		}
 	    }
 	}
     }
     return issue_log;
+}
+
+function log_text(gh, issue_heading) {
+    var out="";
+    if (gh.user.login !=='github-actions[bot]')  {
+	if (issue_heading==false) {
+	    out += "## " + issue.title + '\n\n';
+	    issue_heading=true;
+	}
+	let body = gh.body;
+	// Find end of the first sentence after 200 chars
+	let detail_ind = [...body.matchAll(new RegExp('[.!?] ', 'g'))].map(a => a.index).find(pos => pos > 200);
+	out += '\n\n- [' + gh.updated_at + '](' + gh.html_url + ')\n\n'
+	if (detail_ind === undefined) {
+	    out += gh.body + '\n';
+	} else {
+	    out += "<details><summary>"+ body.substring(0,detail_ind+1) + "...</summary>" + body.substring(detail_ind+1)  + "</details>" + '\n';
+	}
+    }
+    return [out, issue_heading];
 }
 
 async function set_readme() {
