@@ -91,9 +91,8 @@ async function set_readme() {
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
 	path: ".github/issues.md"
-    });
-    console.log(old_issue);
-    if (old_issue.hasOwnProperty('data')) {
+    }).catch((err) => { console.log(err);});
+    if (old_issue !== undefined) {
 	const { ispath, issha, iscontent, isencoding } = old_issue.data;
 	await octokit.repos.createOrUpdateFileContents({
 	    owner: github.context.repo.owner,
