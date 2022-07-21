@@ -83,14 +83,22 @@ async function set_readme() {
 	    owner: github.context.repo.owner,
 	    repo: github.context.repo.repo,
 	    path: "readme.md",
+	    sha: sha,
 	    message: 'BABS-bot inserted issue link into reame',
 	    content: Buffer.from(updatedContent, "utf-8").toString(encoding)
 	});
     }
+    const old_issue = await octokit.rest.repos.getContent({
+	owner: github.context.repo.owner,
+	repo: github.context.repo.repo,
+	path: ".github/issues.md"
+    });
+    const { ispath, issha, iscontent, isencoding } = old_issue.data;
     await octokit.repos.createOrUpdateFileContents({
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
 	path: ".github/issues.md",
+	sha: issha,
 	message: 'BABS-bot refreshed issues.md page',
 	content: Buffer.from(issue_section, "utf-8").toString(encoding)
     });
