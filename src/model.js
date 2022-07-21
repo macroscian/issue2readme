@@ -68,25 +68,31 @@ async function set_readme() {
     const issue_start="<!--ISSUE_START-->";
     const issue_end="<!--ISSUE_END-->";
     const place_holder="<!--BABSEND-->";
+    const issue_link="[Issue History](.github/issues.md)";
     const { path, sha, content, encoding } = old_readme.data;
     const rawContent = Buffer.from(content, encoding).toString();
-    var startIndex = rawContent.indexOf(issue_start);
     const issue_section = await build_issue_section();
     var updatedContent=rawContent;
-    if (startIndex === -1) {
-	start_index = rawContent.indexOf(place_holder);
-	var updatedContent = updatedContent.replace(place_holder, `${place_holder}\n${issue_start}\n${issue_section}\n${issue_end}`);
-    } else {
-	var end_index=rawContent.indexOf(issue_end);
-	updatedContent = rawContent.slice(0, rawContent.indexOf(issue_start)) + issue_start + '\n' + issue_section + '\n'  + rawContent.slice(rawContent.indexOf(issue_end));
+    if (rawContent.indexOf(issue_link) === -1) { //No Issue Link
+	if (rawContent.indexOf(issue_start) === -1) { // and no issue div
+	    updatedContent = updatedContent.replace(place_holder, `${place_holder}\n${issue_start}\n[Issue History](.github/issues.md)\n${issue_end}`);
+	} else { // No link, but other issue content (legacy issue list injected, probably)
+	    updatedContent = rawContent.slice(0, rawContent.indexOf(issue_start)) + issue_start + '\n[Issue History](.github/issues.md)\n'  + rawContent.slice(rawContent.indexOf(issue_end));
+	}
+	await octokit.repos.createOrUpdateFileContents({
+	    owner: github.context.repo.owner,
+	    repo: github.context.repo.repo,
+	    path: "readme.md",
+	    message: 'BABS-bot inserted issue link into reame',
+	    content: Buffer.from(updatedContent, "utf-8").toString(encoding)
+	});
     }
-    await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+    await octokit.repos.createOrUpdateFileContents({
 	owner: github.context.repo.owner,
 	repo: github.context.repo.repo,
-	path: "readme.md",
-	sha: sha,
-	message: 'BABS-bot transferred issues to readme',
-	content: Buffer.from(updatedContent, "utf-8").toString(encoding)
+	path: ".github/issues.md",
+	message: 'BABS-bot refreshed issues.md page',
+	content: Buffer.from(issue_section, "utf-8").toString(encoding)
     });
 }
 
